@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import AuthService from "../../services/auth";
 
-// --- Form schema ---
+
 const schema = yup.object({
   username: yup.string().required("username is required"),
   password: yup.string().min(5, "At least 5 characters").required("Password is required"),
@@ -49,7 +49,7 @@ const Login: React.FC = () => {
   const onSubmit = async (data:FormInputs) => {
     setLoading(true);
 
-    // Mock API delay
+    
     const res = await AuthService.login({
         username: data.username, // ✅ changed from name
        
@@ -60,11 +60,12 @@ const Login: React.FC = () => {
     if (res.data) {
       
 
-      // Save token
+     
       localStorage.setItem("token", res.data.data.token);
+      
       console.log("token", res.data.data.token);
 
-      // Dispatch login
+      
       dispatch({ type: "LOGIN", payload: {
         "username": res.data.data.username,
         "email": res.data.data.email,
@@ -112,7 +113,7 @@ const Login: React.FC = () => {
               }}
             />
 
-            {/* Password Field */}
+            
             <TextField
               fullWidth
               label="Password"
@@ -137,7 +138,7 @@ const Login: React.FC = () => {
               }}
             />
 
-            {/* Login Button */}
+            
             <Button
               type="submit"
               variant="contained"
@@ -150,7 +151,7 @@ const Login: React.FC = () => {
             </Button>
           </form>
 
-          {/* Register link */}
+          
           <Typography variant="body2" textAlign="center" mt={2}>
             Don&apos;t have an account?{" "}
             <Link component={RouterLink} to="/register" underline="hover">
@@ -160,7 +161,7 @@ const Login: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Toast Container */}
+      
       <Toaster position="top-right" />
     </Box>
   );

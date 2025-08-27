@@ -6,22 +6,27 @@ import PublicRoute from "./routes/PublicRoute";
 // Pages
 import NotFoundPage from "./pages/not-found/index";
 import LoginPage from "./pages/auth/login";
-import HomePage from "./pages/home";
+//import HomePage from "./pages/home";
 import RegisterPage from "./pages/auth/register";
+import ProductsPage from "./pages/ProductPage";
+import OrdersPage from "./pages/OrdersPage";
 
 const App: React.FC = () => {
   return (
     <Routes>
-      {/* Public routes */}
+      
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         
       </Route>
 
-      {/* Private routes */}
+      
       <Route element={<PrivateRoute />}>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<ProductsPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+         
+        
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

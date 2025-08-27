@@ -64,7 +64,7 @@ const onSubmit = async (data: FormInputs) => {
 console.log('sending data', data)
     
     const res = await AuthService.register({
-      username: data.username, // ✅ changed from name
+      username: data.username, 
       email: data.email,
       password: data.password,
     });
@@ -74,8 +74,7 @@ console.log('sending data', data)
     } else {
 
         console.log('response', res?.data)
-      // Save token & user if needed
-      // "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiZWsiLCJpYXQiOjE3NTYyMTY5OTksImV4cCI6ODY1NzU2MjE2OTk5fQ.i7ahcbrOBc0BuQLmwaZZt8a6NhD6K_zQy8sT807G0dc", type: "Bearer", username: "bek",
+      
       localStorage.setItem("token", res.data.data.token);
       if (res.data.user) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -107,13 +106,13 @@ console.log('sending data', data)
           </Typography>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            {/* Name */}
+            
             <TextField
               fullWidth
               label="Username"
               margin="normal"
               {...register("username")}
-              error={!!errors.name}
+              error={!!errors.username}
               helperText={errors.username?.message}
               InputProps={{
                 startAdornment: (
@@ -124,7 +123,7 @@ console.log('sending data', data)
               }}
             />
 
-            {/* Email */}
+            
             <TextField
               fullWidth
               label="Email"
@@ -142,7 +141,7 @@ console.log('sending data', data)
               }}
             />
 
-            {/* Password */}
+            
             <TextField
               fullWidth
               label="Password"
@@ -167,7 +166,7 @@ console.log('sending data', data)
               }}
             />
 
-            {/* Confirm Password */}
+            
             <TextField
               fullWidth
               label="Confirm Password"
@@ -192,7 +191,7 @@ console.log('sending data', data)
               }}
             />
 
-            {/* Register Button */}
+           
             <Button
               type="submit"
               variant="contained"
@@ -205,7 +204,7 @@ console.log('sending data', data)
             </Button>
           </form>
 
-          {/* Login link */}
+          
           <Typography variant="body2" textAlign="center" mt={2}>
             Already have an account?{" "}
             <Link component={RouterLink} to="/login" underline="hover">
@@ -215,7 +214,7 @@ console.log('sending data', data)
         </CardContent>
       </Card>
 
-      {/* Toast Container */}
+      
       <Toaster position="top-right" />
     </Box>
   );

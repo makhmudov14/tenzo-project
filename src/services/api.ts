@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 const baseURL = import.meta.env.VITE_API_BASE_URL as string;
 
 
@@ -7,7 +8,7 @@ const api = axios.create({
   baseURL,
 });
 
-// ✅ Attach token on every request
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -16,7 +17,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ Simple error handling (optional refresh logic)
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
