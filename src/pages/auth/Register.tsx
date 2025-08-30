@@ -9,7 +9,6 @@ import {
   Link,
   CircularProgress,
   Card,
-  CardContent,
   Avatar,
   keyframes,
 } from "@mui/material";

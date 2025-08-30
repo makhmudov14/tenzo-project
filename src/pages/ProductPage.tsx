@@ -10,14 +10,8 @@ import {
   Chip,
   Pagination,
   Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Switch,
-  FormControlLabel,
   styled,
-  keyframes
+  keyframes,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
@@ -40,7 +34,7 @@ const hoverGlow = keyframes`
   100% { box-shadow: 0 3px 6px rgba(0,0,0,0.1);}
 `;
 
-const AnimatedCard = styled(Card)(({ theme }) => ({
+const AnimatedCard = styled(Card)({
   height: "100%",
   borderRadius: 12,
   boxShadow: "0 3px 6px rgba(0,0,0,0.1)",
@@ -51,7 +45,7 @@ const AnimatedCard = styled(Card)(({ theme }) => ({
     animation: `${hoverGlow} 0.6s ease-in-out`,
     background: "linear-gradient(145deg, #f5f5f5, #e0f7fa)",
   },
-}));
+});
 
 const AnimatedButton = styled(Button)(({ theme }) => ({
   transition: "all 0.3s ease",
@@ -77,14 +71,6 @@ interface Product {
   createdAt: string;
 }
 
-interface Form {
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-  isActive: boolean;
-}
-
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -93,13 +79,6 @@ const ProductsPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchCategory, setSearchCategory] = useState("");
-  const [openAdd, setOpenAdd] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [openView, setOpenView] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const initialForm: Form = { name: "", category: "", price: 0, stock: 0, isActive: true };
-  const [form, setForm] = useState<Form>(initialForm);
 
   // --- Load Products ---
   const loadProducts = async (pageNumber: number = 1) => {
@@ -124,19 +103,31 @@ const ProductsPage: React.FC = () => {
 
   return (
     <Box p={{ xs: 1, sm: 3 }}>
-      <ProductsHeader onAdd={() => setOpenAdd(true)} />
+      <ProductsHeader onAdd={() => {}} />
 
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mb={3}>
-        <TextField label="Name" size="small" value={searchName} onChange={e => setSearchName(e.target.value)} />
-        <TextField label="Category" size="small" value={searchCategory} onChange={e => setSearchCategory(e.target.value)} />
-        <AnimatedButton disabled={!searchName && !searchCategory} variant="contained">Search</AnimatedButton>
+        <TextField
+          label="Name"
+          size="small"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+        />
+        <TextField
+          label="Category"
+          size="small"
+          value={searchCategory}
+          onChange={(e) => setSearchCategory(e.target.value)}
+        />
+        <AnimatedButton disabled={!searchName && !searchCategory} variant="contained">
+          Search
+        </AnimatedButton>
       </Stack>
 
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
 
       <Grid container spacing={3}>
-        {products.map(product => (
+        {products.map((product) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
             <AnimatedCard>
               <CardContent>
@@ -151,12 +142,20 @@ const ProductsPage: React.FC = () => {
                 <Typography variant="body2">Category: {product.category}</Typography>
                 <Typography variant="body2">Price: ${product.price}</Typography>
                 <Typography variant="body2">Stock: {product.stock}</Typography>
-                <Typography variant="caption">Added: {dayjs(product.createdAt).format("MM/DD/YYYY")}</Typography>
+                <Typography variant="caption">
+                  Added: {dayjs(product.createdAt).format("MM/DD/YYYY")}
+                </Typography>
 
                 <Stack direction="row" spacing={1} mt={1}>
-                  <AnimatedButton size="small"><EditIcon fontSize="small" /> Edit</AnimatedButton>
-                  <AnimatedButton size="small" color="error"><DeleteIcon fontSize="small" /> Delete</AnimatedButton>
-                  <AnimatedButton size="small"><VisibilityIcon fontSize="small" /> View</AnimatedButton>
+                  <AnimatedButton size="small">
+                    <EditIcon fontSize="small" /> Edit
+                  </AnimatedButton>
+                  <AnimatedButton size="small" color="error">
+                    <DeleteIcon fontSize="small" /> Delete
+                  </AnimatedButton>
+                  <AnimatedButton size="small">
+                    <VisibilityIcon fontSize="small" /> View
+                  </AnimatedButton>
                 </Stack>
               </CardContent>
             </AnimatedCard>
