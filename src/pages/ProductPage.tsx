@@ -10,8 +10,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import dayjs from "dayjs";
-import ProductService from "../services/ProductService";
-import ProductsHeader from "../components/ProductsHeader";
+import ProductService from "../services/productService";
+import ProductsHeader from "../components/productsHeader";
 
 interface Product {
   id: number;

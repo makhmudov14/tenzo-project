@@ -4,7 +4,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import PublicRoute from "./routes/PublicRoute";
 
 // Pages
-import NotFoundPage from "./pages/not-found/Index";
+import NotFoundPage from "./pages/not-found/index";
 
 
 import LoginPage from "./pages/auth/Login";
