@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Box, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 interface ProductsHeaderProps {
   onAdd: () => void;
@@ -11,14 +12,18 @@ interface ProductsHeaderProps {
 const ProductsHeader: React.FC<ProductsHeaderProps> = ({ onAdd }) => {
   const [openLogout, setOpenLogout] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
    
     localStorage.removeItem("token");
+
+    dispatch({ type: "LOGOUT",  });
     
 
-    setOpenLogout(false);
+    
     navigate("/login"); 
+    setOpenLogout(false);
   };
 
   return (
