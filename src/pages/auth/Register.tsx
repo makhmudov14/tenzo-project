@@ -15,7 +15,7 @@ import { Visibility, VisibilityOff, Email, Lock, Person } from "@mui/icons-mater
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import  toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import AuthService from "../../services/auth";

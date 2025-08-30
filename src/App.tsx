@@ -4,12 +4,14 @@ import PrivateRoute from "./routes/PrivateRoute";
 import PublicRoute from "./routes/PublicRoute";
 
 // Pages
-import NotFoundPage from "./pages/not-found/index";
-import LoginPage from "./pages/auth/login";
-//import HomePage from "./pages/home";
-import RegisterPage from "./pages/auth/register";
+import NotFoundPage from "./pages/not-found/Index";
+
+
+import LoginPage from "./pages/auth/Login";
+
+import RegisterPage from "./pages/auth/Register";
 import ProductsPage from "./pages/ProductPage";
-import OrdersPage from "./pages/OrdersPage";
+
 
 const App: React.FC = () => {
   return (
@@ -24,7 +26,7 @@ const App: React.FC = () => {
       
       <Route element={<PrivateRoute />}>
         <Route path="/" element={<ProductsPage />} />
-        <Route path="/orders" element={<OrdersPage />} />
+       
          
         
       </Route>

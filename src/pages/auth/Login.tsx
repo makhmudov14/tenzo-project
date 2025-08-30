@@ -11,7 +11,7 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import { Visibility, VisibilityOff, Email, Lock, Person } from "@mui/icons-material";
+import { Visibility, VisibilityOff, Lock, Person } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";

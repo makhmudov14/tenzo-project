@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Box, Button, Stack, Tab, Tabs } from "@mui/material";
-import ProductsPage from "./ProductsPage";
-import OrdersPage from "./OrdersPage";
+
 import AddIcon from "@mui/icons-material/Add";
+import ProductsPage from "./ProductPage";
+
 
 const AdminPage: React.FC = () => {
   const [tab, setTab] = useState<0 | 1>(0); // 0 = Products, 1 = Orders
@@ -38,7 +39,7 @@ const AdminPage: React.FC = () => {
       {/* Content */}
       <Box>
         {tab === 0 && <ProductsPage />}
-        {tab === 1 && <OrdersPage />}
+        
       </Box>
     </Box>
   );

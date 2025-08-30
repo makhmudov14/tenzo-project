@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box, Grid, Card, CardContent, Typography, CircularProgress,
+  Box, Card, CardContent, Typography, CircularProgress,
   TextField, Button, Chip, Pagination, Stack, Dialog, DialogTitle,
   DialogContent, DialogActions, Switch, FormControlLabel
 } from "@mui/material";
+import Grid from "@mui/material/Grid";
+
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import dayjs from "dayjs";
 import ProductService from "../services/ProductService";
-import ProductsHeader from "../components/productsHeader";
+import ProductsHeader from "../components/ProductsHeader";
 
 interface Product {
   id: number;
@@ -64,7 +66,6 @@ const ProductsPage: React.FC = () => {
     }
   };
 
-  // ---- Search ----
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
@@ -84,7 +85,6 @@ const ProductsPage: React.FC = () => {
     }
   };
 
-  // ---- Pagination ----
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     if (searchName || searchCategory) {
       handleSearch();
@@ -93,7 +93,6 @@ const ProductsPage: React.FC = () => {
     }
   };
 
-  // ---- Add/Edit/Delete ----
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
@@ -147,7 +146,6 @@ const ProductsPage: React.FC = () => {
     }
   };
 
-  // ---- View Details ----
   const handleView = (product: Product) => {
     setSelectedProduct(product);
     setOpenView(true);
@@ -156,7 +154,6 @@ const ProductsPage: React.FC = () => {
   useEffect(() => {
     loadProducts(1);
   }, []);
-
 
   return (
     <Box p={3}>
