@@ -101,24 +101,24 @@ const Register: React.FC = () => {
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      sx={{ bgcolor: "#f0f4f8", px: 2, py: { xs: 2, sm: 0 }, animation: `${fadeInUp} 0.8s ease-out` }}
+      sx={{ bgcolor: "#f0f4f8", px: 2, animation: `${fadeInUp} 0.8s ease-out` }}
     >
       <Card
         sx={{
-          maxWidth: 450,
+          maxWidth: 400,
           width: "100%",
-          p: 3,
-          borderRadius: 4,
-          boxShadow: 5,
+          p: 2,
+          borderRadius: 3,
+          boxShadow: 4,
           background: "linear-gradient(145deg, #ffffff, #e6f0ff)",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
           "@media(max-width:600px)": {
-            p: 2,
+            p: 1.5,
             mx: 1,
-            maxHeight: "calc(100vh - 32px)", // mobile uchun 100vh dan paddinglarni ayirib
-            overflowY: "auto", // faqat Card ichida scroll bo‘lsin
+            maxHeight: "100%",
+            overflow: "visible",
           },
         }}
       >
@@ -126,18 +126,18 @@ const Register: React.FC = () => {
           src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
           alt="Register Avatar"
           sx={{
-            width: 100,
-            height: 100,
+            width: 80,
+            height: 80,
             mx: "auto",
-            mb: 2,
+            mb: 1.5,
             borderRadius: "50%",
-            border: "4px solid #1a73e8",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            border: "3px solid #1a73e8",
+            boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
             animation: `${hoverAvatar} 2s ease-in-out infinite`,
           }}
         />
 
-        <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ color: "#1a73e8", mb: 3 }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: "#1a73e8", mb: 2 }}>
           Register
         </Typography>
 
@@ -145,86 +145,86 @@ const Register: React.FC = () => {
           <TextField
             fullWidth
             label="Username"
-            margin="normal"
+            margin="dense"
             {...register("username")}
             error={!!errors.username || registerError}
             helperText={errors.username?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Person />
+                  <Person fontSize="small" />
                 </InputAdornment>
               ),
             }}
-            sx={{ mb: 2, "& .MuiInputBase-root": { borderRadius: 2 } }}
+            sx={{ mb: 1.5, "& .MuiInputBase-root": { borderRadius: 2, fontSize: "0.875rem" } }}
           />
 
           <TextField
             fullWidth
             label="Email"
             type="email"
-            margin="normal"
+            margin="dense"
             {...register("email")}
             error={!!errors.email || registerError}
             helperText={errors.email?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Email />
+                  <Email fontSize="small" />
                 </InputAdornment>
               ),
             }}
-            sx={{ mb: 2, "& .MuiInputBase-root": { borderRadius: 2 } }}
+            sx={{ mb: 1.5, "& .MuiInputBase-root": { borderRadius: 2, fontSize: "0.875rem" } }}
           />
 
           <TextField
             fullWidth
             label="Password"
             type={showPassword ? "text" : "password"}
-            margin="normal"
+            margin="dense"
             {...register("password")}
             error={!!errors.password || registerError}
             helperText={errors.password?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Lock />
+                  <Lock fontSize="small" />
                 </InputAdornment>
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" size="small">
+                    {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
-            sx={{ mb: 2, "& .MuiInputBase-root": { borderRadius: 2 } }}
+            sx={{ mb: 1.5, "& .MuiInputBase-root": { borderRadius: 2, fontSize: "0.875rem" } }}
           />
 
           <TextField
             fullWidth
             label="Confirm Password"
             type={showConfirmPassword ? "text" : "password"}
-            margin="normal"
+            margin="dense"
             {...register("confirmPassword")}
             error={!!errors.confirmPassword || registerError}
             helperText={errors.confirmPassword?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Lock />
+                  <Lock fontSize="small" />
                 </InputAdornment>
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
-                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" size="small">
+                    {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
-            sx={{ mb: 3, "& .MuiInputBase-root": { borderRadius: 2 } }}
+            sx={{ mb: 2, "& .MuiInputBase-root": { borderRadius: 2, fontSize: "0.875rem" } }}
           />
 
           <Button
@@ -232,8 +232,9 @@ const Register: React.FC = () => {
             variant="contained"
             fullWidth
             sx={{
-              py: 1.5,
-              borderRadius: 3,
+              py: 1.2,
+              borderRadius: 2.5,
+              fontSize: "0.875rem",
               background: "linear-gradient(90deg, #1a73e8, #4285f4)",
               color: "#fff",
               fontWeight: "bold",
@@ -243,13 +244,13 @@ const Register: React.FC = () => {
             }}
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
+            {loading ? <CircularProgress size={20} color="inherit" /> : "Register"}
           </Button>
         </form>
 
-        <Typography variant="body2" textAlign="center" mt={3} sx={{ color: "#555" }}>
+        <Typography variant="body2" textAlign="center" mt={2} sx={{ color: "#555" }}>
           Already have an account?{" "}
-          <Link component={RouterLink} to="/login" underline="hover" sx={{ fontWeight: "bold" }}>
+          <Link component={RouterLink} to="/login" underline="hover" sx={{ fontWeight: "bold", fontSize: "0.875rem" }}>
             Login
           </Link>
         </Typography>
