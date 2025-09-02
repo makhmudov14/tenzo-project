@@ -16,7 +16,7 @@ import { Visibility, VisibilityOff, Lock, Person } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import toast, { Toaster } from "react-hot-toast";
+import  { Toaster, toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import AuthService from "../../services/auth";
@@ -64,6 +64,7 @@ const Login: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -77,6 +78,7 @@ const Login: React.FC = () => {
     });
 
     if (res.data) {
+      setLoginError(false);
       localStorage.setItem("token", res.data.data.token);
       dispatch({
         type: "LOGIN",
@@ -89,6 +91,7 @@ const Login: React.FC = () => {
       toast.success("Login successful!");
       navigate("/");
     } else {
+      setLoginError(true); // input qizil bo‘lishi uchun
       toast.error("Invalid username or password!");
     }
 
@@ -122,9 +125,8 @@ const Login: React.FC = () => {
           },
         }}
       >
-        {/* --- Stylish Login Illustration Avatar --- */}
         <Avatar
-          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" // Chiroyli login illustration
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
           alt="Login Avatar"
           sx={{
             width: 100,
@@ -154,8 +156,8 @@ const Login: React.FC = () => {
             type="text"
             margin="normal"
             {...register("username")}
-            error={!!errors.username}
-            helperText={errors.username?.message}
+            error={!!errors.username || loginError} // server xatosi bilan qizil input
+            helperText={errors.username?.message || (loginError ? "Incorrect username or password" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -163,10 +165,7 @@ const Login: React.FC = () => {
                 </InputAdornment>
               ),
             }}
-            sx={{
-              mb: 2,
-              "& .MuiInputBase-root": { borderRadius: 2 },
-            }}
+            sx={{ mb: 2, "& .MuiInputBase-root": { borderRadius: 2 } }}
           />
 
           <TextField
@@ -175,8 +174,8 @@ const Login: React.FC = () => {
             type={showPassword ? "text" : "password"}
             margin="normal"
             {...register("password")}
-            error={!!errors.password}
-            helperText={errors.password?.message}
+            error={!!errors.password || loginError} // server xatosi bilan qizil input
+            helperText={errors.password?.message || (loginError ? "Incorrect username or password" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -191,10 +190,7 @@ const Login: React.FC = () => {
                 </InputAdornment>
               ),
             }}
-            sx={{
-              mb: 3,
-              "& .MuiInputBase-root": { borderRadius: 2 },
-            }}
+            sx={{ mb: 3, "& .MuiInputBase-root": { borderRadius: 2 } }}
           />
 
           <Button

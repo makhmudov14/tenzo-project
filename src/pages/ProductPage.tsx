@@ -17,6 +17,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
@@ -79,20 +81,18 @@ interface Product {
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]); // 🔥 search uchun original data
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // --- Dialog states ---
   const [openAdd, setOpenAdd] = useState(false);
   const [openView, setOpenView] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // --- Add Product form state ---
   const [newProduct, setNewProduct] = useState({
     name: "",
     category: "",
@@ -101,8 +101,9 @@ const ProductsPage: React.FC = () => {
   });
 
   const navigate = useNavigate();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm")); // mobil dialog full screen
 
-  // --- Cart qo‘shish ---
   const handleAddToCart = (product: Product) => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const updatedCart = [...cart, product];
@@ -110,7 +111,6 @@ const ProductsPage: React.FC = () => {
     navigate("/cart");
   };
 
-  // --- Load Products ---
   const loadProducts = async (pageNumber: number = 1) => {
     setLoading(true);
     setError(null);
@@ -118,7 +118,7 @@ const ProductsPage: React.FC = () => {
       const { data, error } = await ProductService.getAll(pageNumber - 1, 10);
       if (error || !data?.success) throw new Error("Failed to load products");
       setProducts(data.data.content);
-      setAllProducts(data.data.content); // 🔥 search uchun saqlab qo‘yamiz
+      setAllProducts(data.data.content);
       setTotalPages(data.data.totalPages);
       setPage(data.data.number + 1);
     } catch (err: any) {
@@ -132,27 +132,25 @@ const ProductsPage: React.FC = () => {
     loadProducts(1);
   }, []);
 
-  // --- Save New Product ---
   const handleSaveProduct = async () => {
     try {
       await ProductService.create({
         name: newProduct.name,
         category: newProduct.category,
-        price: Number(newProduct.price), // ✅ number qilib jo‘natamiz
-        stock: Number(newProduct.stock), // ✅ number qilib jo‘natamiz
+        price: Number(newProduct.price),
+        stock: Number(newProduct.stock),
       });
       setOpenAdd(false);
       setNewProduct({ name: "", category: "", price: "", stock: "" });
-      loadProducts(page); // ✅ qayta yuklash
+      loadProducts(page);
     } catch (err) {
       console.error("Failed to add product", err);
     }
   };
 
-  // --- 🔎 Search function ---
   const handleSearch = (query: string) => {
     if (!query.trim()) {
-      setProducts(allProducts); // agar input bo‘sh bo‘lsa original productlarni qaytaramiz
+      setProducts(allProducts);
       return;
     }
     const filtered = allProducts.filter(
@@ -167,8 +165,8 @@ const ProductsPage: React.FC = () => {
     <Box p={{ xs: 1, sm: 3 }}>
       <ProductsHeader onAdd={() => setOpenAdd(true)} onSearch={handleSearch} />
 
-      {/* 🔥 Add Product Dialog */}
-      <Dialog open={openAdd} onClose={() => setOpenAdd(false)} fullWidth maxWidth="sm">
+      {/* Add Product Dialog */}
+      <Dialog open={openAdd} onClose={() => setOpenAdd(false)} fullScreen={fullScreen} fullWidth maxWidth="sm">
         <DialogTitle>Add New Product</DialogTitle>
         <DialogContent>
           <Stack spacing={2} mt={1}>
@@ -200,16 +198,16 @@ const ProductsPage: React.FC = () => {
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenAdd(false)}>Cancel</Button>
-          <Button onClick={handleSaveProduct} variant="contained" color="success">
+        <DialogActions sx={{ flexDirection: { xs: "column", sm: "row" }, gap: 1, px: 3, py: 2 }}>
+          <Button fullWidth={fullScreen} onClick={() => setOpenAdd(false)}>Cancel</Button>
+          <Button fullWidth={fullScreen} onClick={handleSaveProduct} variant="contained" color="success">
             Save
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* View Product Dialog */}
-      <Dialog open={openView} onClose={() => setOpenView(false)} fullWidth maxWidth="sm">
+      <Dialog open={openView} onClose={() => setOpenView(false)} fullScreen={fullScreen} fullWidth maxWidth="sm">
         <DialogTitle>View Product</DialogTitle>
         <DialogContent>
           {selectedProduct && (
@@ -223,20 +221,21 @@ const ProductsPage: React.FC = () => {
             </Stack>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenView(false)}>Close</Button>
+        <DialogActions sx={{ flexDirection: { xs: "column", sm: "row" }, gap: 1, px: 3, py: 2 }}>
+          <Button fullWidth={fullScreen} onClick={() => setOpenView(false)}>Close</Button>
         </DialogActions>
       </Dialog>
 
       {/* Delete Confirm Dialog */}
-      <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+      <Dialog open={openDelete} onClose={() => setOpenDelete(false)} fullScreen={fullScreen}>
         <DialogTitle>Delete Product</DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to delete this product?</Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDelete(false)}>Cancel</Button>
+        <DialogActions sx={{ flexDirection: { xs: "column", sm: "row" }, gap: 1, px: 3, py: 2 }}>
+          <Button fullWidth={fullScreen} onClick={() => setOpenDelete(false)}>Cancel</Button>
           <Button
+            fullWidth={fullScreen}
             onClick={async () => {
               if (!selectedProduct) return;
               try {
@@ -256,50 +255,40 @@ const ProductsPage: React.FC = () => {
       </Dialog>
 
       {/* Product List */}
-      {loading && <CircularProgress />}
+      {loading && <Box textAlign="center" mt={4}><CircularProgress /></Box>}
       {error && <Typography color="error">{error}</Typography>}
 
       <Grid container spacing={3}>
         {products.map((product) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-            <AnimatedCard>
+          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+            <AnimatedCard sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
               <CardContent>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                  <Typography variant="h6">{product.name}</Typography>
-                  <Chip
-                    label={product.isActive ? "Active" : "Inactive"}
-                    color={product.isActive ? "success" : "error"}
-                    size="small"
-                  />
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  justifyContent="space-between"
+                  alignItems={{ xs: "flex-start", sm: "center" }}
+                  mb={1}
+                  spacing={1}
+                >
+                  <Typography variant="h6" noWrap>{product.name}</Typography>
+                  <Chip label={product.isActive ? "Active" : "Inactive"} color={product.isActive ? "success" : "error"} size="small" />
                 </Stack>
-                <Typography variant="body2">Category: {product.category}</Typography>
+
+                <Typography variant="body2" noWrap>Category: {product.category}</Typography>
                 <Typography variant="body2">Price: ${product.price}</Typography>
                 <Typography variant="body2">Stock: {product.stock}</Typography>
                 <Typography variant="caption">Added: {dayjs(product.createdAt).format("MM/DD/YYYY")}</Typography>
 
-                <Stack direction="row" spacing={1} mt={1}>
-                  <AnimatedButton size="small" color="primary" onClick={() => handleAddToCart(product)}>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1} mt={2}>
+                  <AnimatedButton size="small" color="primary" fullWidth={fullScreen} onClick={() => handleAddToCart(product)}>
                     <ShoppingCartIcon fontSize="small" /> Add to Cart
                   </AnimatedButton>
 
-                  <AnimatedButton
-                    size="small"
-                    color="error"
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setOpenDelete(true);
-                    }}
-                  >
+                  <AnimatedButton size="small" color="error" fullWidth={fullScreen} onClick={() => { setSelectedProduct(product); setOpenDelete(true); }}>
                     <DeleteIcon fontSize="small" /> Delete
                   </AnimatedButton>
 
-                  <AnimatedButton
-                    size="small"
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setOpenView(true);
-                    }}
-                  >
+                  <AnimatedButton size="small" fullWidth={fullScreen} onClick={() => { setSelectedProduct(product); setOpenView(true); }}>
                     <VisibilityIcon fontSize="small" /> View
                   </AnimatedButton>
                 </Stack>

@@ -41,38 +41,29 @@ type FormInputs = {
 
 // --- Keyframe Animations ---
 const fadeInUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const scaleButton = keyframes`
-  0%, 100% { transform: scale(1); }
+  0%,100% { transform: scale(1); }
   50% { transform: scale(1.05); }
 `;
 
 const hoverAvatar = keyframes`
-  0%, 100% { transform: scale(1); }
+  0%,100% { transform: scale(1); }
   50% { transform: scale(1.1); }
 `;
 
 const Register: React.FC = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormInputs>({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormInputs>({
     resolver: yupResolver(schema),
   });
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [registerError, setRegisterError] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -87,8 +78,10 @@ const Register: React.FC = () => {
       });
 
       if (res.error) {
+        setRegisterError(true);
         toast.error(res.error.message || "Registration failed");
       } else {
+        setRegisterError(false);
         localStorage.setItem("token", res.data.data.token);
         if (res.data.user) localStorage.setItem("user", JSON.stringify(res.data.user));
         dispatch({ type: "LOGIN", payload: res.data.user });
@@ -96,6 +89,7 @@ const Register: React.FC = () => {
         navigate("/");
       }
     } catch (err: any) {
+      setRegisterError(true);
       toast.error(err.message || "Something went wrong");
     }
     setLoading(false);
@@ -121,9 +115,8 @@ const Register: React.FC = () => {
           "@media(max-width:600px)": { p: 2, mx: 1 },
         }}
       >
-        {/* --- Stylish Register Illustration Avatar --- */}
         <Avatar
-          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" // Login bilan uyg'un illustration
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
           alt="Register Avatar"
           sx={{
             width: 100,
@@ -147,8 +140,8 @@ const Register: React.FC = () => {
             label="Username"
             margin="normal"
             {...register("username")}
-            error={!!errors.username}
-            helperText={errors.username?.message}
+            error={!!errors.username || registerError}
+            helperText={errors.username?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -165,8 +158,8 @@ const Register: React.FC = () => {
             type="email"
             margin="normal"
             {...register("email")}
-            error={!!errors.email}
-            helperText={errors.email?.message}
+            error={!!errors.email || registerError}
+            helperText={errors.email?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -183,8 +176,8 @@ const Register: React.FC = () => {
             type={showPassword ? "text" : "password"}
             margin="normal"
             {...register("password")}
-            error={!!errors.password}
-            helperText={errors.password?.message}
+            error={!!errors.password || registerError}
+            helperText={errors.password?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -208,8 +201,8 @@ const Register: React.FC = () => {
             type={showConfirmPassword ? "text" : "password"}
             margin="normal"
             {...register("confirmPassword")}
-            error={!!errors.confirmPassword}
-            helperText={errors.confirmPassword?.message}
+            error={!!errors.confirmPassword || registerError}
+            helperText={errors.confirmPassword?.message || (registerError ? "Registration error" : "")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -239,9 +232,7 @@ const Register: React.FC = () => {
               fontWeight: "bold",
               textTransform: "none",
               animation: `${scaleButton} 1.2s ease-in-out infinite`,
-              "&:hover": {
-                background: "linear-gradient(90deg, #4285f4, #1a73e8)",
-              },
+              "&:hover": { background: "linear-gradient(90deg, #4285f4, #1a73e8)" },
             }}
             disabled={loading}
           >

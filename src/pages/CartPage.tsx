@@ -131,7 +131,7 @@ const CartPage: React.FC = () => {
 
   return (
     <Box
-      p={3}
+      p={isMobile ? 2 : 3}
       sx={{
         minHeight: "100vh",
         background:
@@ -198,23 +198,33 @@ const CartPage: React.FC = () => {
                     variant="outlined"
                     size="small"
                     onClick={() => handleQuantity(item.id, -1)}
+                    sx={{ minWidth: 36 }}
                   >
-                    <RemoveIcon />
+                    <RemoveIcon fontSize="small" />
                   </Button>
                   <Typography>{item.quantity || 1}</Typography>
                   <Button
                     variant="outlined"
                     size="small"
                     onClick={() => handleQuantity(item.id, 1)}
+                    sx={{ minWidth: 36 }}
                   >
-                    <AddIcon />
+                    <AddIcon fontSize="small" />
                   </Button>
                 </Stack>
 
                 <Stack direction="row" spacing={0.5} mt={1}>
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <IconButton key={i} onClick={() => handleRating(item.id, i)}>
-                      {i <= (item.rating || 0) ? <StarIcon color="warning" /> : <StarBorderIcon />}
+                    <IconButton
+                      key={i}
+                      onClick={() => handleRating(item.id, i)}
+                      sx={{ padding: 0.5 }}
+                    >
+                      {i <= (item.rating || 0) ? (
+                        <StarIcon color="warning" fontSize="small" />
+                      ) : (
+                        <StarBorderIcon fontSize="small" />
+                      )}
                     </IconButton>
                   ))}
                 </Stack>
@@ -232,9 +242,13 @@ const CartPage: React.FC = () => {
             </GlassCard>
           ))}
 
-          <Divider sx={{ my: 3, width: "100%" }} />
-
-          <Stack spacing={2} width={isMobile ? "100%" : "300px"} flexShrink={0}>
+          {/* Checkout Summary */}
+          <Stack
+            spacing={2}
+            width={isMobile ? "100%" : "300px"}
+            flexShrink={0}
+            mt={isMobile ? 3 : 0}
+          >
             <Typography variant="h6" fontWeight={700}>
               Total: {totalPrice} USD
             </Typography>
