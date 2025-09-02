@@ -101,7 +101,7 @@ const Register: React.FC = () => {
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      sx={{ bgcolor: "#f0f4f8", px: 2, animation: `${fadeInUp} 0.8s ease-out` }}
+      sx={{ bgcolor: "#f0f4f8", px: 2, py: { xs: 2, sm: 0 }, animation: `${fadeInUp} 0.8s ease-out` }}
     >
       <Card
         sx={{
@@ -112,11 +112,13 @@ const Register: React.FC = () => {
           boxShadow: 5,
           background: "linear-gradient(145deg, #ffffff, #e6f0ff)",
           textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
           "@media(max-width:600px)": {
             p: 2,
             mx: 1,
-            maxHeight: "90vh",        // MOBILE MAX HEIGHT
-            overflowY: "auto",        // SCROLL ENABLE
+            maxHeight: "calc(100vh - 32px)", // mobile uchun 100vh dan paddinglarni ayirib
+            overflowY: "auto", // faqat Card ichida scroll bo‘lsin
           },
         }}
       >
@@ -251,9 +253,9 @@ const Register: React.FC = () => {
             Login
           </Link>
         </Typography>
-
-        <Toaster position="top-right" />
       </Card>
+
+      <Toaster position="top-right" />
     </Box>
   );
 };
