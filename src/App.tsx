@@ -11,6 +11,12 @@ import LoginPage from "./pages/auth/Login";
 
 import RegisterPage from "./pages/auth/Register";
 import ProductsPage from "./pages/ProductPage";
+import CartPage from "./pages/CartPage";
+import AddProduct from "./pages/AddProductPage";
+
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+
 
 
 const App: React.FC = () => {
@@ -26,6 +32,13 @@ const App: React.FC = () => {
       
       <Route element={<PrivateRoute />}>
         <Route path="/" element={<ProductsPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/add-product" element={<AddProduct />} />
+        
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        
+        
        
          
         

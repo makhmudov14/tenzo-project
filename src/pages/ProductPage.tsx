@@ -1,3 +1,4 @@
+// src/pages/ProductsPage.tsx
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -12,13 +13,18 @@ import {
   Stack,
   styled,
   keyframes,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 import ProductService from "../services/productService";
 import ProductsHeader from "../components/productsHeader";
 
@@ -73,12 +79,36 @@ interface Product {
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]); // 🔥 search uchun original data
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchName, setSearchName] = useState("");
-  const [searchCategory, setSearchCategory] = useState("");
+
+  // --- Dialog states ---
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openView, setOpenView] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // --- Add Product form state ---
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    category: "",
+    price: "",
+    stock: "",
+  });
+
+  const navigate = useNavigate();
+
+  // --- Cart qo‘shish ---
+  const handleAddToCart = (product: Product) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const updatedCart = [...cart, product];
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    navigate("/cart");
+  };
 
   // --- Load Products ---
   const loadProducts = async (pageNumber: number = 1) => {
@@ -88,6 +118,7 @@ const ProductsPage: React.FC = () => {
       const { data, error } = await ProductService.getAll(pageNumber - 1, 10);
       if (error || !data?.success) throw new Error("Failed to load products");
       setProducts(data.data.content);
+      setAllProducts(data.data.content); // 🔥 search uchun saqlab qo‘yamiz
       setTotalPages(data.data.totalPages);
       setPage(data.data.number + 1);
     } catch (err: any) {
@@ -101,28 +132,130 @@ const ProductsPage: React.FC = () => {
     loadProducts(1);
   }, []);
 
+  // --- Save New Product ---
+  const handleSaveProduct = async () => {
+    try {
+      await ProductService.create({
+        name: newProduct.name,
+        category: newProduct.category,
+        price: Number(newProduct.price), // ✅ number qilib jo‘natamiz
+        stock: Number(newProduct.stock), // ✅ number qilib jo‘natamiz
+      });
+      setOpenAdd(false);
+      setNewProduct({ name: "", category: "", price: "", stock: "" });
+      loadProducts(page); // ✅ qayta yuklash
+    } catch (err) {
+      console.error("Failed to add product", err);
+    }
+  };
+
+  // --- 🔎 Search function ---
+  const handleSearch = (query: string) => {
+    if (!query.trim()) {
+      setProducts(allProducts); // agar input bo‘sh bo‘lsa original productlarni qaytaramiz
+      return;
+    }
+    const filtered = allProducts.filter(
+      (p) =>
+        p.name.toLowerCase().includes(query.toLowerCase()) ||
+        p.category.toLowerCase().includes(query.toLowerCase())
+    );
+    setProducts(filtered);
+  };
+
   return (
     <Box p={{ xs: 1, sm: 3 }}>
-      <ProductsHeader onAdd={() => {}} />
+      <ProductsHeader onAdd={() => setOpenAdd(true)} onSearch={handleSearch} />
 
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mb={3}>
-        <TextField
-          label="Name"
-          size="small"
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-        />
-        <TextField
-          label="Category"
-          size="small"
-          value={searchCategory}
-          onChange={(e) => setSearchCategory(e.target.value)}
-        />
-        <AnimatedButton disabled={!searchName && !searchCategory} variant="contained">
-          Search
-        </AnimatedButton>
-      </Stack>
+      {/* 🔥 Add Product Dialog */}
+      <Dialog open={openAdd} onClose={() => setOpenAdd(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Add New Product</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} mt={1}>
+            <TextField
+              label="Name"
+              fullWidth
+              value={newProduct.name}
+              onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+            />
+            <TextField
+              label="Category"
+              fullWidth
+              value={newProduct.category}
+              onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+            />
+            <TextField
+              label="Price"
+              type="number"
+              fullWidth
+              value={newProduct.price}
+              onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+            />
+            <TextField
+              label="Stock"
+              type="number"
+              fullWidth
+              value={newProduct.stock}
+              onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAdd(false)}>Cancel</Button>
+          <Button onClick={handleSaveProduct} variant="contained" color="success">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
 
+      {/* View Product Dialog */}
+      <Dialog open={openView} onClose={() => setOpenView(false)} fullWidth maxWidth="sm">
+        <DialogTitle>View Product</DialogTitle>
+        <DialogContent>
+          {selectedProduct && (
+            <Stack spacing={2} mt={1}>
+              <Typography><b>Name:</b> {selectedProduct.name}</Typography>
+              <Typography><b>Category:</b> {selectedProduct.category}</Typography>
+              <Typography><b>Price:</b> ${selectedProduct.price}</Typography>
+              <Typography><b>Stock:</b> {selectedProduct.stock}</Typography>
+              <Typography><b>Status:</b> {selectedProduct.isActive ? "Active" : "Inactive"}</Typography>
+              <Typography><b>Created:</b> {dayjs(selectedProduct.createdAt).format("MM/DD/YYYY")}</Typography>
+            </Stack>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenView(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirm Dialog */}
+      <Dialog open={openDelete} onClose={() => setOpenDelete(false)}>
+        <DialogTitle>Delete Product</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this product?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDelete(false)}>Cancel</Button>
+          <Button
+            onClick={async () => {
+              if (!selectedProduct) return;
+              try {
+                await ProductService.remove(selectedProduct.id.toString());
+                setOpenDelete(false);
+                loadProducts(page);
+              } catch (err) {
+                console.error("Failed to delete product", err);
+              }
+            }}
+            color="error"
+            variant="contained"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Product List */}
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
 
@@ -142,18 +275,31 @@ const ProductsPage: React.FC = () => {
                 <Typography variant="body2">Category: {product.category}</Typography>
                 <Typography variant="body2">Price: ${product.price}</Typography>
                 <Typography variant="body2">Stock: {product.stock}</Typography>
-                <Typography variant="caption">
-                  Added: {dayjs(product.createdAt).format("MM/DD/YYYY")}
-                </Typography>
+                <Typography variant="caption">Added: {dayjs(product.createdAt).format("MM/DD/YYYY")}</Typography>
 
                 <Stack direction="row" spacing={1} mt={1}>
-                  <AnimatedButton size="small">
-                    <EditIcon fontSize="small" /> Edit
+                  <AnimatedButton size="small" color="primary" onClick={() => handleAddToCart(product)}>
+                    <ShoppingCartIcon fontSize="small" /> Add to Cart
                   </AnimatedButton>
-                  <AnimatedButton size="small" color="error">
+
+                  <AnimatedButton
+                    size="small"
+                    color="error"
+                    onClick={() => {
+                      setSelectedProduct(product);
+                      setOpenDelete(true);
+                    }}
+                  >
                     <DeleteIcon fontSize="small" /> Delete
                   </AnimatedButton>
-                  <AnimatedButton size="small">
+
+                  <AnimatedButton
+                    size="small"
+                    onClick={() => {
+                      setSelectedProduct(product);
+                      setOpenView(true);
+                    }}
+                  >
                     <VisibilityIcon fontSize="small" /> View
                   </AnimatedButton>
                 </Stack>
