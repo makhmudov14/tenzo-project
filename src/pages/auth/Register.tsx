@@ -112,7 +112,12 @@ const Register: React.FC = () => {
           boxShadow: 5,
           background: "linear-gradient(145deg, #ffffff, #e6f0ff)",
           textAlign: "center",
-          "@media(max-width:600px)": { p: 2, mx: 1 },
+          "@media(max-width:600px)": {
+            p: 2,
+            mx: 1,
+            maxHeight: "90vh",        // MOBILE MAX HEIGHT
+            overflowY: "auto",        // SCROLL ENABLE
+          },
         }}
       >
         <Avatar
@@ -246,9 +251,9 @@ const Register: React.FC = () => {
             Login
           </Link>
         </Typography>
-      </Card>
 
-      <Toaster position="top-right" />
+        <Toaster position="top-right" />
+      </Card>
     </Box>
   );
 };
