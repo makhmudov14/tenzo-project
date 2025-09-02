@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   Stack,
-  Divider,
   Card,
   CardContent,
   CardMedia,
