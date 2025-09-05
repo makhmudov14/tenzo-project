@@ -1,4 +1,4 @@
-// src/pages/ProductsPage.tsx
+
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -21,7 +21,6 @@ import {
   useTheme,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -30,39 +29,55 @@ import { useNavigate } from "react-router-dom";
 import ProductService from "../services/productService";
 import ProductsHeader from "../components/productsHeader";
 
+// 👉 mock productlar
+import { products as mockProducts } from "../data/product";
+
 // --- Animations ---
 const fadeInUp = keyframes`
-  0% { opacity: 0; transform: translateY(20px);}
+  0% { opacity: 0; transform: translateY(30px);}
   100% { opacity: 1; transform: translateY(0);}
 `;
 
 const hoverGlow = keyframes`
-  0% { box-shadow: 0 3px 6px rgba(0,0,0,0.1);}
-  50% { box-shadow: 0 12px 25px rgba(0,0,0,0.25);}
-  100% { box-shadow: 0 3px 6px rgba(0,0,0,0.1);}
+  0% { box-shadow: 0 6px 12px rgba(0,0,0,0.1);}
+  50% { box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
+  100% { box-shadow: 0 6px 12px rgba(0,0,0,0.1);}
 `;
 
-const AnimatedCard = styled(Card)({
+const AnimatedCard = styled(Card)(({ theme }) => ({
   height: "100%",
-  borderRadius: 12,
-  boxShadow: "0 3px 6px rgba(0,0,0,0.1)",
+  borderRadius: 20,
+  background: "linear-gradient(145deg,#ffffff,#f3f4f6)",
+  boxShadow: "0 6px 12px rgba(0,0,0,0.1)",
   transition: "transform 0.3s ease, box-shadow 0.3s ease",
-  animation: `${fadeInUp} 0.6s ease`,
+  animation: `${fadeInUp} 0.5s ease`,
+  overflow: "hidden",
   "&:hover": {
-    transform: "scale(1.04)",
+    transform: "translateY(-6px) scale(1.03)",
     animation: `${hoverGlow} 0.6s ease-in-out`,
-    background: "linear-gradient(145deg, #f5f5f5, #e0f7fa)",
+    boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
   },
-});
+  "& img": {
+    borderBottom: `4px solid ${theme.palette.primary.light}`,
+  },
+}));
 
 const AnimatedButton = styled(Button)(({ theme }) => ({
+  borderRadius: 12,
+  fontWeight: 600,
+  textTransform: "none",
+  padding: "6px 10px",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   transition: "all 0.3s ease",
   "&:hover": {
-    transform: "scale(1.05)",
-    backgroundColor: theme.palette.primary.light,
+    transform: "scale(1.07)",
+    backgroundColor: theme.palette.primary.main,
+    color: "#fff",
+    boxShadow: "0 6px 12px rgba(0,0,0,0.15)",
   },
   "& svg": {
     transition: "transform 0.3s ease",
+    marginRight: 4,
   },
   "&:hover svg": {
     transform: "scale(1.2)",
@@ -77,6 +92,7 @@ interface Product {
   category: string;
   isActive: boolean;
   createdAt: string;
+  image?: string;
 }
 
 const ProductsPage: React.FC = () => {
@@ -117,8 +133,22 @@ const ProductsPage: React.FC = () => {
     try {
       const { data, error } = await ProductService.getAll(pageNumber - 1, 10);
       if (error || !data?.success) throw new Error("Failed to load products");
-      setProducts(data.data.content);
-      setAllProducts(data.data.content);
+
+      // api dan kelgan productlar
+      const apiProducts: Product[] = data.data.content;
+
+      // mock productlarni image bilan birlashtiramiz
+      const combined = [
+        ...mockProducts.map((p, i) => ({
+          ...p,
+          // agar image yo‘q bo‘lsa random image qo‘yamiz
+          image: p.image || `https://picsum.photos/300?random=${i + 1}`,
+        })),
+        ...apiProducts,
+      ];
+
+      setProducts(combined);
+      setAllProducts(combined);
       setTotalPages(data.data.totalPages);
       setPage(data.data.number + 1);
     } catch (err: any) {
@@ -162,7 +192,11 @@ const ProductsPage: React.FC = () => {
   };
 
   return (
-    <Box p={{ xs: 1, sm: 3 }}>
+    <Box p={{ xs: 1, sm: 3 }} sx={{
+      background: "linear-gradient(135deg,#e6f0ff,#f9fafb)", 
+      minHeight: "100vh", 
+    }}
+   >
       <ProductsHeader onAdd={() => setOpenAdd(true)} onSearch={handleSearch} />
 
       {/* Add Product Dialog */}
@@ -212,6 +246,10 @@ const ProductsPage: React.FC = () => {
         <DialogContent>
           {selectedProduct && (
             <Stack spacing={2} mt={1}>
+              {/* image ham ko‘rsatamiz */}
+              {selectedProduct.image && (
+                <Box component="img" src={selectedProduct.image} alt={selectedProduct.name} sx={{ width: "100%", borderRadius: 2 }} />
+              )}
               <Typography><b>Name:</b> {selectedProduct.name}</Typography>
               <Typography><b>Category:</b> {selectedProduct.category}</Typography>
               <Typography><b>Price:</b> ${selectedProduct.price}</Typography>
@@ -259,9 +297,13 @@ const ProductsPage: React.FC = () => {
       {error && <Typography color="error">{error}</Typography>}
 
       <Grid container spacing={3}>
-        {products.map((product) => (
-          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+        {products.map((product, idx) => (
+          <Grid item key={`${product.id}-${idx}`} xs={12} sm={6} md={4} lg={3}>
             <AnimatedCard sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
+              {/* image preview */}
+              {product.image && (
+                <Box component="img" src={product.image} alt={product.name} sx={{ width: "100%", height: 180, objectFit: "cover" }} />
+              )}
               <CardContent>
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
@@ -270,14 +312,29 @@ const ProductsPage: React.FC = () => {
                   mb={1}
                   spacing={1}
                 >
-                  <Typography variant="h6" noWrap>{product.name}</Typography>
-                  <Chip label={product.isActive ? "Active" : "Inactive"} color={product.isActive ? "success" : "error"} size="small" />
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: "text.primary" }} noWrap>
+                    {product.name}
+                  </Typography>
+                  <Chip
+                    label={product.isActive ? "Active" : "Inactive"}
+                    color={product.isActive ? "success" : "error"}
+                    size="small"
+                    sx={{ fontWeight: 600 }}
+                  />
                 </Stack>
 
-                <Typography variant="body2" noWrap>Category: {product.category}</Typography>
-                <Typography variant="body2">Price: ${product.price}</Typography>
-                <Typography variant="body2">Stock: {product.stock}</Typography>
-                <Typography variant="caption">Added: {dayjs(product.createdAt).format("MM/DD/YYYY")}</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                  Category: {product.category}
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 600, mt: 0.5 }}>
+                  ${product.price}
+                </Typography>
+                <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                  Stock: {product.stock}
+                </Typography>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                  Added: {dayjs(product.createdAt).format("MM/DD/YYYY")}
+                </Typography>
 
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1} mt={2}>
                   <AnimatedButton size="small" color="primary" fullWidth={fullScreen} onClick={() => handleAddToCart(product)}>
@@ -288,7 +345,7 @@ const ProductsPage: React.FC = () => {
                     <DeleteIcon fontSize="small" /> Delete
                   </AnimatedButton>
 
-                  <AnimatedButton size="small" fullWidth={fullScreen} onClick={() => { setSelectedProduct(product); setOpenView(true); }}>
+                  <AnimatedButton size="small" color="secondary" fullWidth={fullScreen} onClick={() => { setSelectedProduct(product); setOpenView(true); }}>
                     <VisibilityIcon fontSize="small" /> View
                   </AnimatedButton>
                 </Stack>

@@ -62,7 +62,7 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({ onSearch, onAdd }) => {
 
   return (
     <>
-      <AppBar position="static" color="primary" sx={{ backgroundColor: "#1565c0" }}>
+      <AppBar position="static" color="primary" sx={{ backgroundColor: "#1565c0" , mb: 4}}>
         <Toolbar
           sx={{
             display: "flex",
