@@ -30,7 +30,7 @@ import ProductService from "../services/productService";
 import ProductsHeader from "../components/productsHeader";
 
 // 👉 mock productlar
-import { products as mockProducts } from "../data/product";
+import { products as mockProducts } from "../data/Product";
 
 // --- Animations ---
 const fadeInUp = keyframes`
